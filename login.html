@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Predictive Maintenance System</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            position: fixed; /* Fix header at the top */
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 20px; /* Reduce padding for a thinner header */
+            background: black; /* Keep solid black */
+            box-shadow: 0 2px 6px rgba(0, 255, 255, 0.2);
+            transition: background 0.3s, box-shadow 0.3s;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 1.8rem; /* Adjust size for a thinner header */
+            color: #00d9ff;
+            margin-left: 20px; /* Ensure left alignment */
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background: url('img3.jpg') no-repeat center center/cover;
+            height: 100vh;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .login-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-container h1 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .login-container form {
+            margin-top: 20px;
+        }
+
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none; /* Initially hidden */
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .login-container p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .login-container a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .login-container a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Reloader */
+        .loader-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .success-message {
+            font-size: 1.2rem;
+            color: #28a745; /* Green success color */
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Floating Action Buttons */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .fab:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .password-container {
+            position: relative;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            padding-right: 35px; /* Space for button */
+        }
+
+        .password-container .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 15%;
+            background: none;
+            border: none;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: gray;
+            padding: 0;
+            width: 30px; /* Small button inside input */
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-container .toggle-password:hover {
+            color: gray;
+            background: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Predictive Maintenance System</h1>
+    </header>
+    
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="login-form">
+            <input type="text" id="username" name="username" placeholder="Enter Username" required autocomplete="username">
+            <div class="password-container">
+                <input type="password" name="password" id="password" placeholder="Password" required autocomplete="current-password">
+                <button type="button" class="toggle-password" onclick="togglePassword('password', this)">👁️</button>
+            </div>
+            <p id="error-message" class="error-message">Invalid username or password!</p>
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="register.html">Sign up</a></p>
+    </div>
+
+    <!-- Reloader -->
+    <div id="loader-container" class="loader-container">
+        <p class="success-message">✅ Successfully Logged In</p>
+        <div class="loader"></div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <a href="landing page.html">
+        <button class="fab" title="Home">🏠</button>
+    </a>
+
+    <script>
+
+        function togglePassword(inputId, button) {
+            let inputField = document.getElementById(inputId);
+
+            if (inputField.type === "password") {
+                inputField.type = "text";
+                button.textContent = "🙈"; // Change to hidden eye emoji
+            } else {
+                inputField.type = "password";
+                button.textContent = "👁️"; // Change back to open eye emoji
+            }
+        }
+
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const errorMessage = document.getElementById("error-message");
+
+            // Ensure both fields are filled
+            if (!username || !password) {
+                errorMessage.textContent = "Please enter both username and password!";
+                errorMessage.style.display = "block";
+                return;
+            }
+            try {
+                const response = await fetch("http://127.0.0.1:8000/token", {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    }),
+                });
+
+                const responseData = await response.json();
+                console.log("Server Response:", responseData); // Debugging
+
+                if (response.ok) {
+                    localStorage.setItem("token", responseData.access_token);
+                    localStorage.setItem("username", username);
+                    console.log("Login successful, redirecting...");
+
+                    document.querySelector(".login-container").style.display = "none";
+                    document.getElementById("loader-container").style.display = "flex";
+
+                    setTimeout(() => {
+                        window.location.href = "machine selection.html";
+                    }, 500);
+                } else {
+                    errorMessage.textContent = responseData.detail || "Invalid username or password!";
+                    errorMessage.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                errorMessage.textContent = "Something went wrong! Please try again.";
+                errorMessage.style.display = "block";
+            }
+        });
+
+
+    </script>
+
+</body>
+</html>

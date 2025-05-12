@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Maintenance System</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: url('img2.jpg') no-repeat center center/cover;
+            color: rgb(230, 233, 230);
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .machine-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .machine-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .machine-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .machine-card p {
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        footer {
+            margin: 20px 0;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        footer p {
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        .about-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .about-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .about-btn:focus {
+            outline: 2px solid #ffffff;
+        }
+
+        /* About Section */
+        .about-section {
+            opacity: 0;
+            visibility: hidden;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            max-width: 1200px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: justify;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: white;
+            z-index: 999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lets-predict-btn {
+            margin: 30px 0;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .lets-predict-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Predictive Maintenance System</h1>
+        <p>Explore all the machines supported by our cutting-edge system</p>
+        <button class="about-btn" aria-label="About Predictive Maintenance System">About</button>
+    </header>
+
+    <div class="container">
+        <h1>Machine Categories</h1>
+        <div class="machine-info">
+            <!-- Machine Cards -->
+            <!-- The existing machine cards go here -->
+            <div class="machine-card">
+                <h3>Lathe Machine</h3>
+                <p>Used for shaping materials by rotating them against a cutting tool.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Milling Machine</h3>
+                <p>Used for cutting, drilling, and shaping solid materials.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Drill Machine</h3>
+                <p>Tool for making holes or driving fasteners into materials.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Grinder</h3>
+                <p>Machine used for grinding and finishing surfaces with abrasives.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Injection Molding Machine</h3>
+                <p>Used for manufacturing plastic products through injection molding.</p>
+            </div>
+            <div class="machine-card">
+                <h3>CNC Router</h3>
+                <p>Computer-controlled machine for cutting and engraving materials.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Press Machine</h3>
+                <p>Applies force to form or shape materials, commonly metal.</p>
+            </div>
+            <div class="machine-card">
+                <h3>3D Printer</h3>
+                <p>Used for creating three-dimensional objects layer by layer.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Compressor</h3>
+                <p>Used to increase the pressure of gases or air.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Pump</h3>
+                <p>Used to move liquids through a system, commonly water or oil.</p>
+            </div>
+            <div class="machine-card">
+                <h3>HVAC System</h3>
+                <p>Heating, ventilation, and air conditioning system for climate control.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Boiler</h3>
+                <p>Used to produce steam or hot water for heating or industrial processes.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Water Jet Cutter</h3>
+                <p>High-pressure water cutting machine for precision cutting.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Laser Cutting Machine</h3>
+                <p>Utilizes lasers to cut materials with high precision.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Hydraulic Press</h3>
+                <p>Applies hydraulic force for molding, bending, or pressing materials.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Vacuum Forming Machine</h3>
+                <p>Used for shaping plastic sheets into forms with heat and vacuum.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Extrusion Machine</h3>
+                <p>Pushes materials through a die to create objects with fixed cross-sections.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Conveyor System</h3>
+                <p>Automated system for transporting materials across distances.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Robotic Arm</h3>
+                <p>Programmable mechanical arm used for manufacturing and automation.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Packaging Machine</h3>
+                <p>Used for wrapping, boxing, and securing goods for distribution.</p>
+            </div>
+            <div class="machine-card">
+                <h3>CNC Milling Machine</h3>
+                <p>to automate precise cutting and shaping of materials using computer-controlled movements of a rotating cutting tool.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Forklift</h3>
+                <p>to lift, transport, and stack heavy loads using powered forks or attachments.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Industrial Oven</h3>
+                <p> to heat, bake, or cure materials uniformly for industrial processing.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Food Processing Machine</h3>
+                <p> to automate the transformation of raw ingredients into packaged or prepared food products.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Metal Shearing Machine</h3>
+                <p>to cut or trim metal sheets into desired shapes and sizes using a sharp blade.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Injection Stretch Blow Moulding Machine</h3>
+                <p>to form hollow plastic containers by injecting, stretching, and blowing molten plastic into a mold.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Vacuum Pump</h3>
+                <p> to remove air and gas molecules from a sealed space to create a vacuum.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Centrifugal fan</h3>
+                <p> to move air or gases by converting rotational energy into kinetic energy through a spinning impeller.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Heat Exchanger</h3>
+                <p> to transfer heat between two fluids without mixing them.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Cooling Tower</h3>
+                <p> to remove heat from water by evaporative cooling, typically in industrial or HVAC systems.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Diesel Generator</h3>
+                <p> to produce electrical power by converting diesel fuel into mechanical energy through a combustion engine.</p>
+            </div>
+            <div class="machine-card">
+                <h3>Electric Transformer</h3>
+                <p> to change the voltage level of electrical energy between circuits through electromagnetic induction.</p>
+            </div>
+        </div>
+    </div>
+    <!-- "Let's Predict" Button -->
+    <button onclick="redirectToHome()" style="
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 1.2rem;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    ">
+        Let's Predict
+    </button>
+
+    <div class="about-section" id="about-section">
+        <!-- About section content -->
+        <h2>About This System</h2>
+        <p class="about-text">
+        <p><br>In today’s fast-paced and technology-driven world, keeping equipment running smoothly is essential to
+            maintaining operational efficiency and reducing costs.
+            Our Predictive Maintenance System (PdM) is a cutting-edge solution designed to help organizations monitor,
+            predict, and prevent equipment failures before they occur.
+            By harnessing the power of advanced data analytics, machine learning, and real-time monitoring, our system
+            enables businesses to stay ahead of costly breakdowns,
+            minimize downtime, and extend the life of critical assets.
+        </p>
+        <br><h3>Features:</h3>
+        <br>1. Real-Time Monitoring: Continuous monitoring of your machinery's health, tracking essential parameters
+            like vibration, temperature, and pressure to detect anomalies.<br>
+            2. Predictive Analytics: Our machine learning models analyze historical data and current conditions to
+            predict
+            failures before they happen, ensuring timely intervention.<br>
+            3. Optimized Maintenance Schedules: With predictive insights, our system helps you schedule maintenance
+            based
+            on actual need rather than fixed intervals, minimizing unnecessary downtime and reducing maintenance
+            costs.<br>
+            4. Extended Asset Life: Proactive maintenance reduces wear and tear on your equipment, extending its useful
+            life and improving overall reliability.<br>
+            5. Seamless Integration: Easily integrate our solution with your existing equipment and enterprise systems,
+            from IoT sensors to ERP platforms, ensuring a smooth transition.<br></p>
+        <br>
+        <p><h3>Why Choose Our Predictive Maintenance System?</h3>
+        <br>1. Cost Efficiency: Reduce unexpected repairs and downtime with accurate, data-driven maintenance
+            predictions.<br>
+            2. Improved Operational Efficiency: Increase productivity by minimizing machine failures and streamlining
+            your
+            maintenance processes.<br>
+            3. Better Resource Allocation: Allocate your resources more effectively with prioritized maintenance tasks,
+            focusing on what needs attention right now.<br>
+            4. Scalable Solutions: Whether you’re a small business or a large enterprise, our PdM system can scale to
+            meet your needs.<br></p>
+
+        <p>embracing our Predictive Maintenance System, you are not just improving your maintenance strategy—you're
+            setting your organization up for future success, with more reliable assets, fewer interruptions, and a
+            smarter, more efficient approach to managing your equipment</p>
+        </p>
+    </div>
+
+    <footer>
+        <p>© 2024 Predictive Maintenance System | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        const aboutBtn = document.querySelector('.about-btn');
+        const aboutSection = document.getElementById('about-section');
+
+        aboutBtn.addEventListener('click', () => {
+            aboutSection.classList.toggle('show');
+        });
+        function redirectToHome() {
+            window.location.href = "homepage1.html"; // Replace with your homepage URL
+        }
+    </script>
+</body>
+
+</html>

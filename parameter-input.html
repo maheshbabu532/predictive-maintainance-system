@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Maintenance - Dynamic Parameters</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+
+        .header {
+            background: linear-gradient(90deg, rgba(0, 123, 255, 1) 0%, rgba(0, 255, 255, 1) 100%);
+            color: white;
+            padding: 50px 0;
+        }
+
+        .form-section {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-section {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        #result {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header text-center d-flex justify-content-between align-items-center px-4">
+        <div class="container">
+            <h1>Predictive Maintenance System</h1>
+            <p class="lead">Input Your Parameters For Analysis</p>
+        </div>
+        <a href="landing page.html" class="btn btn-danger" onclick="logoutUser()">Logout</a>
+    </header>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="form-section">
+                <h2 class="text-center" id="form-title">Enter Machine Parameters</h2>
+                <form id="parameters-form">
+                    <div id="dynamic-parameters" class="row">
+                        <!-- Dynamically generated inputs will appear here -->
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block mt-3">Submit Parameters</button>
+                </form>
+            </div>
+
+            <div id="result" class="result-section">
+                <h2>Results</h2>
+                <p><strong>Failure Probability:</strong> <span id="failure-probability"></span></p>
+                <p><strong>Alert:</strong></p>
+                <div id="alert-message"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function logoutUser() {
+            // Clear session storage
+            sessionStorage.clear();
+            localStorage.clear(); // Optional: If you store data in localStorage
+
+            // Redirect to the landing page
+            window.location.href = "index.html";
+        }
+
+        // Prevent user from going back after logout
+        window.history.pushState(null, "", window.location.href);
+        window.addEventListener("popstate", function () {
+            window.history.pushState(null, "", window.location.href);
+        });
+
+        // Check if user is logged in (Add this to protected pages)
+        function checkLogin() {
+            if (!sessionStorage.getItem("loggedIn")) {
+                window.location.href = "landing page.html"; // Redirect to landing page if not logged in
+            }
+        }
+
+        // Machine-Parameter Mapping
+        const machineParameters = {
+            "Lathe Machine": [
+                { name: "Spindle Speed", placeholder: "e.g., 1200-2000 RPM" },
+                { name: "Tool Pressure", placeholder: "e.g., 5.5-6.0 Bar" },
+                { name: "Cutting Temperature", placeholder: "e.g., 70-80°C" },
+                { name: "Vibration", placeholder: "e.g., 0.5-1.0 m/s²" }
+            ],
+            "Milling Machine": [
+                { name: "Tool Speed", placeholder: "e.g., 1000-4000 RPM" },
+                { name: "Table Feed", placeholder: "e.g., 150-300 mm/min" },
+                { name: "Coolant Flow", placeholder: "e.g., 1-10 L/min" },
+                { name: "Cutting Depth", placeholder: "e.g., 1.0-2.9 mm" }
+            ],
+            "Drill Machine": [
+                { name: "Drill Speed", placeholder: "e.g., 300-1500 RPM" },
+                { name: "Pressure", placeholder: "e.g., 50-200 N" },
+                { name: "Material Hardness", placeholder: "e.g., 30-60 HRC" },
+                { name: "Coolant Level", placeholder: "e.g., 0.5-5 L" }
+            ],
+            "Grinder": [
+                { name: "Grinding Wheel Speed", placeholder: "e.g., 1000-3000 RPM" },
+                { name: "Wheel Pressure", placeholder: "e.g., 150-400 Nm" },
+                { name: "Coolant Flow", placeholder: "e.g., 2-8 L/min" },
+                { name: "Temperature", placeholder: "e.g., 110-150°C" }
+            ],
+            "Injection Molding Machine": [
+                { name: "Injection Pressure", placeholder: "e.g., 500-2000 Bar" },
+                { name: "Mold Temperature", placeholder: "e.g., 30-120°C" },
+                { name: "Cycle Time", placeholder: "e.g., 10-30 seconds" },
+                { name: "Clamping Force", placeholder: "e.g., 50-300 Ton" }
+            ],
+            "CNC Router": [
+                { name: "Spindle Speed", placeholder: "e.g., 8000-24000 RPM" },
+                { name: "Feed Rate", placeholder: "e.g., 100-500 mm/min" },
+                { name: "Tool Diameter", placeholder: "e.g., 3-12 mm" },
+                { name: "Bed Temperature", placeholder: "e.g., 60-110°C" }
+            ],
+            "Press Machine": [
+                { name: "Press Force", placeholder: "e.g., 100-1000 kN" },
+                { name: "Stroke Length", placeholder: "e.g., 50-200 mm" },
+                { name: "Cycle Time", placeholder: "e.g., 5-30 seconds" },
+                { name: "Die Temperature", placeholder: "e.g., 100-500°C" }
+            ],
+            "3D Printer": [
+                { name: "Nozzle Temperature", placeholder: "e.g., 190-240°C" },
+                { name: "Bed Temperature", placeholder: "e.g., 60-100°C" },
+                { name: "Layer Thickness", placeholder: "e.g., 0.1-0.3 mm" },
+                { name: "Print Speed", placeholder: "e.g., 40-150 mm/s" }
+            ],
+            "Compressor": [
+                { name: "Air Pressure", placeholder: "e.g., 6-12 Bar" },
+                { name: "Motor Speed", placeholder: "e.g., 800-3000 RPM" },
+                { name: "Oil Temperature", placeholder: "e.g., 30-90°C" },
+                { name: "Flow Rate", placeholder: "e.g., 50-200 CFM" }
+            ],
+            "Pump": [
+                { name: "Flow Rate", placeholder: "e.g., 10-200 L/min" },
+                { name: "Pump Speed", placeholder: "e.g., 500-3000 RPM" },
+                { name: "Discharge Pressure", placeholder: "e.g., 5-50 Bar" },
+                { name: "Fluid Temperature", placeholder: "e.g., 20-80°C" }
+            ],
+            "HVAC System": [
+                { name: "Air Flow Rate", placeholder: "e.g., 200-5000 CFM" },
+                { name: "Cooling Efficiency", placeholder: "e.g., 2.5-6 kW/ton" },
+                { name: "Compressor Pressure", placeholder: "e.g., 5-15 Bar" },
+                { name: "Refrigerant Temperature", placeholder: "e.g., 0-50°C" }
+            ],
+            "Boiler": [
+                { name: "Steam Pressure", placeholder: "e.g., 1-20 Bar" },
+                { name: "Water Temperature", placeholder: "e.g., 60-120°C" },
+                { name: "Fuel Flow Rate", placeholder: "e.g., 1-10 L/hr" },
+                { name: "Exhaust Temperature", placeholder: "e.g., 100-300°C" }
+            ],
+            "Water Jet Cutter": [
+                { name: "Water Pressure", placeholder: "e.g., 3000-6000 Bar" },
+                { name: "Nozzle Diameter", placeholder: "e.g., 0.1-0.5 mm" },
+                { name: "Abrasive Flow Rate", placeholder: "e.g., 0.1-1.0 kg/min" },
+                { name: "Cutting Speed", placeholder: "e.g., 50-500 mm/min" }
+            ],
+            "Laser Cutting Machine": [
+                { name: "Laser Power", placeholder: "e.g., 100-3000 W" },
+                { name: "Cutting Speed", placeholder: "e.g., 10-1000 mm/min" },
+                { name: "Focus Position", placeholder: "e.g., 0-2 mm" },
+                { name: "Assist Gas Pressure", placeholder: "e.g., 0.5-15 Bar" }
+            ],
+            "CNC Milling Machine": [
+                { name: "Spindle Speed", placeholder: "e.g., 8000-24000 RPM" },
+                { name: "Feed Rate", placeholder: "e.g., 100-600 mm/min" },
+                { name: "Tool Diameter", placeholder: "e.g., 2-16 mm" },
+                { name: "Coolant Temperature", placeholder: "e.g., 20-60°C" }
+            ],
+            "Extrusion Machine": [
+                { name: "Barrel Temperature", placeholder: "e.g., 150-300°C" },
+                { name: "Screw Speed", placeholder: "e.g., 20-150 RPM" },
+                { name: "Melt Pressure", placeholder: "e.g., 100-3000 Bar" },
+                { name: "Die Temperature", placeholder: "e.g., 180-250°C" }
+            ],
+            "Robotic Arm": [
+                { "name": "Axis Speed", "placeholder": "e.g., 30-180°/s" },
+                { "name": "Payload Capacity", "placeholder": "e.g., 1-500 kg" },
+                { "name": "Joint Angle", "placeholder": "e.g., 0-360°" },
+                { "name": "Torque", "placeholder": "e.g., 10-200 Nm" }
+            ],
+            "Wire EDM Machine": [
+                { name: "Wire Tension", placeholder: "e.g., 5-20 N" },
+                { name: "Cutting Speed", placeholder: "e.g., 10-100 mm/min" },
+                { name: "Spark Voltage", placeholder: "e.g., 50-100 V" },
+                { name: "Dielectric Flow", placeholder: "e.g., 5-20 L/min" }
+            ],
+            "Crane": [
+                { name: "Lifting Capacity", placeholder: "e.g., 1-50 Tons" },
+                { name: "Boom Length", placeholder: "e.g., 5-50 m" },
+                { name: "Rotation Speed", placeholder: "e.g., 0-3 RPM" },
+                { name: "Hoist Speed", placeholder: "e.g., 1-20 m/min" }
+            ],
+            "Forklift": [
+                { name: "Lifting Capacity", placeholder: "e.g., 1-20 Tons" },
+                { name: "Mast Height", placeholder: "e.g., 3-12 m" },
+                { name: "Engine Temperature", placeholder: "e.g., 70-110°C" },
+                { name: "Fuel Level", placeholder: "e.g., 10-100 %" }
+            ],
+            "Heat Exchanger": [
+                { name: "Inlet Temperature", placeholder: "e.g., 50-150°C" },
+                { name: "Outlet Temperature", placeholder: "e.g., 30-120°C" },
+                { name: "Flow Rate", placeholder: "e.g., 10-500 L/min" },
+                { name: "Heat Transfer Efficiency", placeholder: "e.g., 60-95 %" }
+            ],
+            "Conveyor System": [
+                { name: "Belt Speed", placeholder: "e.g., 1-10 m/s" },
+                { name: "Load Weight", placeholder: "e.g., 10-1000 kg" },
+                { name: "Motor Temperature", placeholder: "e.g., 30-80°C" },
+                { name: "Power Consumption", placeholder: "e.g., 1-50 kW" }
+            ],
+            "Packaging Machine": [
+                { name: "Sealing Temperature", placeholder: "e.g., 100-250°C" },
+                { name: "Cycle Time", placeholder: "e.g., 2-20 seconds" },
+                { name: "Film Thickness", placeholder: "e.g., 0.5-3 mm" },
+                { name: "Material Feed Rate", placeholder: "e.g., 10-500 m/min" }
+            ],
+            "Robot Arm": [
+                { name: "Axis Speed", placeholder: "e.g., 30-180 deg/s" },
+                { name: "Payload Capacity", placeholder: "e.g., 1-500 kg" },
+                { name: "Joint Angle", placeholder: "e.g., 0-360°" },
+                { name: "Torque", placeholder: "e.g., 10-200 Nm" }
+            ],
+            "Vacuum Forming Machine": [
+                { name: "Vacuum Pressure", placeholder: "e.g., 0.1-1.0 Bar" },
+                { name: "Heating Temperature", placeholder: "e.g., 100-250°C" },
+                { name: "Forming Time", placeholder: "e.g., 10-60 seconds" },
+                { name: "Sheet Thickness", placeholder: "e.g., 0.5-5 mm" }
+            ],
+            "Hydraulic Press": [
+                { name: "Hydraulic Pressure", placeholder: "e.g., 50-300 Bar" },
+                { name: "Ram Speed", placeholder: "e.g., 10-150 mm/s" },
+                { name: "Cycle Time", placeholder: "e.g., 5-60 seconds" },
+                { name: "Oil Temperature", placeholder: "e.g., 30-90°C" }
+            ],
+            "Industrial Oven": [
+                { name: "Oven Temperature", placeholder: "e.g., 50-300°C" },
+                { name: "Air Circulation Speed", placeholder: "e.g., 1-10 m/s" },
+                { name: "Humidity Level", placeholder: "e.g., 10-90%" },
+                { name: "Energy Consumption", placeholder: "e.g., 1-50 kWh" }
+            ],
+            "Food Processing Machine": [
+                { name: "Motor Speed", placeholder: "e.g., 500-3000 RPM" },
+                { name: "Processing Temperature", placeholder: "e.g., 20-100°C" },
+                { name: "Feed Rate", placeholder: "e.g., 50-500 kg/h" },
+                { name: "Pressure", placeholder: "e.g., 5-50 Bar" }
+            ],
+            "Metal Shearing Machine": [
+                { name: "Shear Force", placeholder: "e.g., 10-200 kN" },
+                { name: "Blade Gap", placeholder: "e.g., 0.1-5 mm" },
+                { name: "Cutting Speed", placeholder: "e.g., 5-100 mm/s" },
+                { name: "Sheet Thickness", placeholder: "e.g., 1-10 mm" }
+            ],
+            "Injection Stretch Blow Molding Machine": [
+                { name: "Injection Pressure", placeholder: "e.g., 100-2000 Bar" },
+                { name: "Mold Temperature", placeholder: "e.g., 30-120°C" },
+                { name: "Stretch Speed", placeholder: "e.g., 1-10 m/s" },
+                { name: "Cycle Time", placeholder: "e.g., 10-30 seconds" }
+            ],
+            "Vacuum Pump": [
+                { name: "Vacuum Level", placeholder: "e.g., 0.1-1.0 mbar" },
+                { name: "Motor Speed", placeholder: "e.g., 500-3000 RPM" },
+                { name: "Oil Temperature", placeholder: "e.g., 30-80°C" },
+                { name: "Flow Rate", placeholder: "e.g., 10-200 L/min" }
+            ],
+            "Centrifugal Fan": [
+                { name: "Fan Speed", placeholder: "e.g., 500-3000 RPM" },
+                { name: "Air Flow Rate", placeholder: "e.g., 1000-50000 CFM" },
+                { name: "Static Pressure", placeholder: "e.g., 5-200 mmH2O" },
+                { name: "Vibration", placeholder: "e.g., 0.5-2.0 m/s²" }
+            ],
+            "Cooling Tower": [
+                { name: "Water Flow Rate", placeholder: "e.g., 500-5000 L/min" },
+                { name: "Air Flow Rate", placeholder: "e.g., 1000-30000 CFM" },
+                { name: "Inlet Water Temperature", placeholder: "e.g., 35-50°C" },
+                { name: "Outlet Water Temperature", placeholder: "e.g., 25-40°C" }
+            ],
+            "Diesel Generator": [
+                { name: "Fuel Consumption", placeholder: "e.g., 10-50 L/hr" },
+                { name: "Engine Speed", placeholder: "e.g., 1500-3000 RPM" },
+                { name: "Oil Temperature", placeholder: "e.g., 70-110°C" },
+                { name: "Power Output", placeholder: "e.g., 10-500 kW" }
+            ],
+            "Electrical Transformer": [
+                { name: "Load Current", placeholder: "e.g., 100-2000 A" },
+                { name: "Oil Temperature", placeholder: "e.g., 40-100°C" },
+                { name: "Voltage Regulation", placeholder: "e.g., 0.5-5%" },
+                { name: "Core Loss", placeholder: "e.g., 1-10 kW" }
+            ],
+            "Automatic Welding Machine": [
+                { name: "Welding Current", placeholder: "e.g., 50-500 A" },
+                { name: "Welding Voltage", placeholder: "e.g., 10-50 V" },
+                { name: "Wire Feed Rate", placeholder: "e.g., 1-10 m/min" },
+                { name: "Gas Flow Rate", placeholder: "e.g., 5-25 L/min" }
+            ],
+            "Shaper Machine": [
+                { name: "Cutting Speed", placeholder: "e.g., 10-100 mm/s" },
+                { name: "Stroke Length", placeholder: "e.g., 50-700 mm" },
+                { name: "Feed Rate", placeholder: "e.g., 0.2-2 mm/stroke" },
+                { name: "Tool Pressure", placeholder: "e.g., 5-20 N" }
+            ],
+            "Planer Machine": [
+                { name: "Cutting Speed", placeholder: "e.g., 10-150 mm/s" },
+                { name: "Table Size", placeholder: "e.g., 1-5 m²" },
+                { name: "Feed Rate", placeholder: "e.g., 0.2-2 mm/stroke" },
+                { name: "Vibration Level", placeholder: "e.g., 0.1-1.0 m/s²" }
+            ],
+            "Blow Molding Machine": [
+                { name: "Blow Pressure", placeholder: "e.g., 2-15 Bar" },
+                { name: "Mold Temperature", placeholder: "e.g., 30-150°C" },
+                { name: "Cycle Time", placeholder: "e.g., 10-60 seconds" },
+                { name: "Air Flow Rate", placeholder: "e.g., 100-1000 L/min" }
+            ],
+            "Blow Molding Machine": [
+                { name: "Blow Pressure", placeholder: "e.g., 2-15 Bar" },
+                { name: "Mold Temperature", placeholder: "e.g., 30-150°C" },
+                { name: "Cycle Time", placeholder: "e.g., 10-60 seconds" },
+                { name: "Air Flow Rate", placeholder: "e.g., 100-1000 L/min" }
+            ],
+            "Roller Press": [
+                { name: "Roller Pressure", placeholder: "e.g., 500-3000 kN" },
+                { name: "Roller Speed", placeholder: "e.g., 50-300 RPM" },
+                { name: "Feed Rate", placeholder: "e.g., 1-20 TPH" },
+                { name: "Temperature", placeholder: "e.g., 30-150°C" }
+            ],
+            "Vibrating Screen": [
+                { name: "Vibration Amplitude", placeholder: "e.g., 2-10 mm" },
+                { name: "Screening Speed", placeholder: "e.g., 200-1000 RPM" },
+                { name: "Material Feed Rate", placeholder: "e.g., 1-50 TPH" },
+                { name: "Motor Power", placeholder: "e.g., 1-10 kW" }
+            ],
+            "Hammer Mill": [
+                { name: "Rotor Speed", placeholder: "e.g., 1000-3000 RPM" },
+                { name: "Feed Rate", placeholder: "e.g., 1-20 TPH" },
+                { name: "Hammer Wear", placeholder: "e.g., 0.1-5 mm" },
+                { name: "Output Size", placeholder: "e.g., 0.1-10 mm" }
+            ],
+            "Industrial Crusher": [
+                { name: "Crusher Speed", placeholder: "e.g., 500-2000 RPM" },
+                { name: "Feed Rate", placeholder: "e.g., 1-50 TPH" },
+                { name: "Output Size", placeholder: "e.g., 0.5-50 mm" },
+                { name: "Motor Power", placeholder: "e.g., 10-200 kW" }
+            ],
+            "Concrete Mixer": [
+                { name: "Drum Speed", placeholder: "e.g., 10-25 RPM" },
+                { name: "Mixing Time", placeholder: "e.g., 30-300 seconds" },
+                { name: "Batch Volume", placeholder: "e.g., 50-500 L" },
+                { name: "Motor Power", placeholder: "e.g., 1-10 kW" }
+            ],
+            "Road Roller": [
+                { name: "Drum Pressure", placeholder: "e.g., 20-200 kN" },
+                { name: "Speed", placeholder: "e.g., 2-12 km/h" },
+                { name: "Vibration Frequency", placeholder: "e.g., 20-50 Hz" },
+                { name: "Fuel Consumption", placeholder: "e.g., 5-20 L/hr" }
+            ],
+            "Earth Moving Machine": [
+                { name: "Bucket Capacity", placeholder: "e.g., 0.5-5 m³" },
+                { name: "Engine Power", placeholder: "e.g., 50-500 HP" },
+                { name: "Hydraulic Pressure", placeholder: "e.g., 150-300 Bar" },
+                { name: "Cycle Time", placeholder: "e.g., 10-50 seconds" }
+            ],
+            "CNC Turning Center": [
+                { name: "Spindle Speed", placeholder: "e.g., 500-5000 RPM" },
+                { name: "Feed Rate", placeholder: "e.g., 0.1-5 mm/rev" },
+                { name: "Cutting Temperature", placeholder: "e.g., 50-150°C" },
+                { name: "Tool Wear", placeholder: "e.g., 0.01-0.5 mm" }
+            ],
+            "Metal Bending Machine": [
+                { name: "Bending Force", placeholder: "e.g., 50-500 kN" },
+                { name: "Bend Angle", placeholder: "e.g., 0-180°" },
+                { name: "Tool Speed", placeholder: "e.g., 10-100 mm/s" },
+                { name: "Material Thickness", placeholder: "e.g., 0.5-10 mm" }
+            ],
+            "Thread Rolling Machine": [
+                { name: "Rolling Force", placeholder: "e.g., 10-200 kN" },
+                { name: "Spindle Speed", placeholder: "e.g., 100-3000 RPM" },
+                { name: "Thread Pitch", placeholder: "e.g., 0.5-5 mm" },
+                { name: "Material Hardness", placeholder: "e.g., 30-60 HRC" }
+            ],
+            "Electric Arc Furnace": [
+                { name: "Arc Voltage", placeholder: "e.g., 200-500 V" },
+                { name: "Current", placeholder: "e.g., 10-100 kA" },
+                { name: "Temperature", placeholder: "e.g., 1200-1600°C" },
+                { name: "Energy Consumption", placeholder: "e.g., 50-300 kWh/ton" }
+            ],
+            "Induction Furnace": [
+                { name: "Melting Temperature", placeholder: "e.g., 1000-1600°C" },
+                { name: "Power Input", placeholder: "e.g., 50-500 kW" },
+                { name: "Melting Time", placeholder: "e.g., 30-120 minutes" },
+                { name: "Coolant Flow Rate", placeholder: "e.g., 10-50 L/min" }
+            ]
+        };
+
+        // Function to dynamically generate parameter fields
+        function generateFormFields(machineType) {
+            const parametersDiv = document.getElementById("dynamic-parameters");
+            const formTitle = document.getElementById("form-title");
+
+            // Update the title
+            formTitle.textContent = `Enter ${machineType} Parameters`;
+
+            // Clear previous fields
+            parametersDiv.innerHTML = "";
+
+            const parameters = machineParameters[machineType] || [];
+            parameters.forEach(param => {
+                const colDiv = document.createElement("div");
+                colDiv.className = "col-md-4";
+
+                const formGroup = `
+                    <div class="mb-3">
+                        <label class="form-label">${param.name}</label>
+                        <input type="text" class="form-control" placeholder="${param.placeholder}" required>
+                    </div>`;
+                colDiv.innerHTML = formGroup;
+                parametersDiv.appendChild(colDiv);
+            });
+        }
+
+        const apiUrl = "http://127.0.0.1:8000"; // Backend URL
+
+        // Function to handle form submission
+        document.getElementById("parameters-form").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent page reload
+
+            try {
+                // Collect form data into an object
+                const formData = {};
+                const inputs = document.querySelectorAll("#parameters-form input");
+                inputs.forEach(input => {
+                    const label = input.previousElementSibling.textContent.trim();
+                    formData[label] = input.value;
+                });
+
+                // Extract machine type
+                const machineType = getQueryParam("machine") || "Lathe Machine";
+
+                // Send data to backend
+                const response = await fetch(`${apiUrl}/predict/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ machine: machineType, parameters: formData }), // Match backend structure
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById("failure-probability").textContent = result.failure_probability.toFixed(2);
+                    document.getElementById("alert-message").textContent = result.alert;
+                    document.getElementById("result").style.display = "block";
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.detail || "Unknown error occurred"}`);
+                }
+            } catch (error) {
+                console.error("Error submitting parameters:", error);
+                alert("Failed to send data to the server. Please check your backend connection.");
+            }
+        });
+
+        // Function to get query parameter by name
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Extract machine type from URL and generate fields
+        const machineType = getQueryParam("machine") || "Lathe Machine";
+        generateFormFields(machineType);
+    </script>
+</body>
+
+</html>
